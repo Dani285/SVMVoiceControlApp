@@ -8,56 +8,94 @@
 namespace jdlib {
 
 template<class T0>
-class Vector
+class Vector : public std::vector<T0>
 {
-public:
-  using mem_manager_type = typename dlib::memory_manager<Vector<T0>>::kernel_1d;
-  using type = T0;
 
 public:
   Vector() = default;
 
-  std::vector<T0> _data;
+  void Add(const T0& value) { push_back(value); }
 
-  void Add(const T0& value) { _data.push_back(value); }
+  int64_t Size() { return this->size(); }
 
-  int64_t Size() { return _data.size(); }
-
-  const T0& Get(int64_t index) const { return _data.at(index); }
+  const T0& Get(int64_t index) const { return this->at(index); }
 };
 
 class Vectord : public Vector<double>
 {};
 
-class Matrix
+class Matrix : public dlib::matrix<double>
 {
-public:
-  using mem_manager_type = dlib::memory_manager<Matrix>::kernel_1d;
-  using type = double;
-
-  const long NR = dlib::matrix<double>::NR; //< Dynamic Matrices
-  const long NC = dlib::matrix<double>::NC; //< Dynamic Matrices
-
-private:
-  dlib::matrix<double> _data;
 
 public:
   Matrix() = default;
 
-  Matrix(const dlib::matrix<double>& _data)
-    : _data(_data)
+  Matrix(const Matrix& other) = default;
+
+  Matrix(const dlib::matrix<double>& other)
+    : dlib::matrix<double>(other)
   {}
 
   Matrix(int row, int col)
-    : _data(row, col)
+    : dlib::matrix<double>(row, col)
   {}
 
-  void set(int row, int col, double val) { _data(row, col) = val; }
+  Matrix& operator=(const dlib::matrix<double>& other)
+  {
+    this->dlib::matrix<double>::operator=(other);
+    return *this;
+  }
 
-  double get(int row, int col) { return _data(row, col); }
+  Matrix& operator=(const double& other)
+  {
+    this->dlib::matrix<double>::operator=(other);
+    return *this;
+  }
 
-  const dlib::matrix<double>& data() const { return _data; }
+  Matrix& operator-=(const double& other)
+  {
+    this->dlib::matrix<double>::operator-=(other);
+    return *this;
+  }
+
+  //  Matrix& operator/=(const double& other)
+  //  {
+  //    this->dlib::matrix<double>::operator/=(other);
+  //    return *this;
+  //  }
+
+  //  Matrix operator/(const double& other) const
+  //  {
+  //    return Matrix(
+  //      dlib::operator/(static_cast<const dlib::matrix<double>&>(*this),
+  //      other));
+  //  }
+
+  //  Matrix operator/(const int& other) const
+  //  {
+  //    return Matrix(
+  //      dlib::operator/(static_cast<const dlib::matrix<double>&>(*this),
+  //      other));
+  //  }
+
+  void set(int row, int col, double val) { (*this)(row, col) = val; }
+
+  double get(int row, int col) { return (*this)(row, col); }
 };
+
+Matrix
+operator/(const Matrix& A, const double& scalar)
+{
+  dlib::matrix<double> div = static_cast<dlib::matrix<double>>(A) / scalar;
+  return Matrix(div);
+}
+
+Matrix
+operator/(const Matrix& A, const int& scalar)
+{
+  dlib::matrix<double> div = static_cast<dlib::matrix<double>>(A) / scalar;
+  return Matrix(div);
+}
 
 class VectorM : public Vector<Matrix>
 {};
@@ -67,15 +105,13 @@ class VectorM : public Vector<Matrix>
 // using dec_funct_type = dlib::decision_function<kernel_type>;
 // using funct_type = dlib::normalized_function<dec_funct_type>;
 
-class VectorNormalizer
+class VectorNormalizer : dlib::vector_normalizer<Matrix>
 {
-private:
-  dlib::vector_normalizer<Matrix> _normalizer;
 
 public:
-  void Train(const VectorM& samples) { _normalizer.train(samples); }
+  void Train(const VectorM& samples) { train(samples); }
 
-  Matrix Normalize(const Matrix& sample) const { return _normalizer(sample); }
+  Matrix Normalize(const Matrix& sample) const { return (*this)(sample); }
 };
 
 void
@@ -90,68 +126,55 @@ MaximumNu(const Vectord& labels)
   return dlib::maximum_nu(labels);
 }
 
-class RBF
+class RBF : public dlib::radial_basis_kernel<Matrix>
 {
-public:
-  using scalar_type = double;
-  using sample_type = Matrix;
-  using mem_manager_type = dlib::memory_manager<RBF>::kernel_1d;
-
-private:
-  dlib::radial_basis_kernel<Matrix> _kernel;
 
 public:
   RBF() = default;
 
   RBF(double gamma)
-    : _kernel(gamma)
+    : dlib::radial_basis_kernel<Matrix>(gamma)
   {}
 };
 
-class SVMNuTrainer
+class SVMNuTrainer : public dlib::svm_nu_trainer<RBF>
 {
-public:
-  using mem_manager_type = dlib::memory_manager<SVMNuTrainer>::kernel_1d;
-  using kernel_type = RBF;
-  using scalar_type = double;
-  using sample_type = Matrix;
-  using trained_function_type = dlib::decision_function<kernel_type>;
-
-private:
-  dlib::svm_nu_trainer<kernel_type> _trainer;
 
 public:
-  void SetKernel(RBF Kernel) { _trainer.set_kernel(Kernel); }
+  void SetKernel(RBF Kernel) { set_kernel(Kernel); }
 
-  void SetNu(double nu) { _trainer.set_nu(nu); }
+  void SetNu(double nu) { set_nu(nu); }
 
   void Train(const std::vector<Matrix>& samples,
              const std::vector<double>& labels)
   {
-    _trainer.train(samples, labels);
+    train(samples, labels);
   }
 };
 
-Matrix
-CrossValidateTrainer(SVMNuTrainer trainer,
-                     VectorM samples,
-                     Vectord labels,
+class Matrix12 : public dlib::matrix<double, 1, 2>
+{
+public:
+  Matrix12() = default;
+  Matrix12(const dlib::matrix<double, 1, 2>& other)
+    : dlib::matrix<double, 1, 2>(other)
+  {}
+};
+
+Matrix12
+CrossValidateTrainer(const SVMNuTrainer& trainer,
+                     const VectorM& samples,
+                     const Vectord& labels,
                      long fold)
 {
-  return Matrix(dlib::cross_validate_trainer(trainer, samples, labels, fold));
+  return dlib::cross_validate_trainer(trainer, samples, labels, fold);
 }
 
 class LearnedFunction
 {
-public:
-  using dec_funct_type = dlib::decision_function<RBF>;
-  using learned_function_type = dlib::normalized_function<dec_funct_type>;
-
-private:
-  learned_function_type _data;
 
 public:
-  double Evaluate(Matrix sample) const { return _data(sample); }
+  double Evaluate(Matrix sample) const { throw std::runtime_error("CHECK!"); }
 };
 
 class NormalizedProbabilisticFunction
