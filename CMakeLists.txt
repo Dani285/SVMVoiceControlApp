@@ -16,7 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/dlib)
 
 include(UseJava)
 
-add_subdirectory("/home/ujoimro/doc/university/sje/2022-11-21_kalocsanyi_daniel/dlib" "dlib_build")
+add_subdirectory(dlib)
 
 add_executable(svmtrain main.cpp)
 

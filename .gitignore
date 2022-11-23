@@ -72,3 +72,6 @@ Thumbs.db
 *.exe
 
 CMakeLists.txt.user
+install
+jsvm/target
+jsvm/saved_function.dat
