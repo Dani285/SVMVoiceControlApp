@@ -23,6 +23,14 @@ JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_00024ReducedDecisionF
 JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_00024ReducedDecisionFunctionTrainer2_Dispose
   (JNIEnv *, jobject);
 
+/*
+ * Class:     site_selyerobotics_jdlib_JDlib_ReducedDecisionFunctionTrainer2
+ * Method:    Train
+ * Signature: (Lsite/selyerobotics/jdlib/JDlib/VectorM;Lsite/selyerobotics/jdlib/JDlib/Vectord;)Lsite/selyerobotics/jdlib/JDlib/DecisionFunction;
+ */
+JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_00024ReducedDecisionFunctionTrainer2_Train
+  (JNIEnv *, jobject, jobject, jobject);
+
 #ifdef __cplusplus
 }
 #endif

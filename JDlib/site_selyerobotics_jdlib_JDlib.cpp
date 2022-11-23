@@ -38,7 +38,8 @@ Java_site_selyerobotics_jdlib_JDlib_Reduced2(JNIEnv* env,
 
   auto& trainer = memoryManager.Get<svm_nu_trainer_type>(env, jtrainer);
 
-  auto reduced = dlib::reduced2(trainer, num_bv, eps);
+  ReducedDecisionFunctionTrainer2_type reduced =
+    dlib::reduced2(trainer, num_bv, eps);
 
   auto jresult = memoryManager.CreateNative(
     env,
@@ -90,7 +91,7 @@ Java_site_selyerobotics_jdlib_JDlib_CrossValidateTrainer(JNIEnv* env,
 }
 
 void
-Java_site_selyerobotics_jdlib_JDlib_Serialize__Ljava_lang_String_2Lsite_selyerobotics_jdlib_JDlib_LearnedFunction_2(
+Java_site_selyerobotics_jdlib_JDlib_SerializeLearnedFunction(
   JNIEnv* env,
   jclass parent,
   jstring jfileName,
@@ -103,7 +104,7 @@ Java_site_selyerobotics_jdlib_JDlib_Serialize__Ljava_lang_String_2Lsite_selyerob
 }
 
 void
-Java_site_selyerobotics_jdlib_JDlib_Serialize__Ljava_lang_String_2Lsite_selyerobotics_jdlib_JDlib_NormalizedProbabilisticFunction_2(
+Java_site_selyerobotics_jdlib_JDlib_SerializeNormalizedProbabilisticFunction(
   JNIEnv* env,
   jclass parent,
   jstring jfileName,
@@ -117,7 +118,7 @@ Java_site_selyerobotics_jdlib_JDlib_Serialize__Ljava_lang_String_2Lsite_selyerob
 }
 
 void
-Java_site_selyerobotics_jdlib_JDlib_Deserialize__Ljava_lang_String_2Lsite_selyerobotics_jdlib_JDlib_LearnedFunction_2(
+Java_site_selyerobotics_jdlib_JDlib_DeserializeLearnedFunction(
   JNIEnv* env,
   jclass parent,
   jstring jfileName,
@@ -130,7 +131,7 @@ Java_site_selyerobotics_jdlib_JDlib_Deserialize__Ljava_lang_String_2Lsite_selyer
 }
 
 void
-Java_site_selyerobotics_jdlib_JDlib_Deserialize__Ljava_lang_String_2Lsite_selyerobotics_jdlib_JDlib_NormalizedProbabilisticFunction_2(
+Java_site_selyerobotics_jdlib_JDlib_DeserializeNormalizedProbabilisticFunction(
   JNIEnv* env,
   jclass parent,
   jstring jfileName,
@@ -144,7 +145,7 @@ Java_site_selyerobotics_jdlib_JDlib_Deserialize__Ljava_lang_String_2Lsite_selyer
 }
 
 jobject
-Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction__Lsite_selyerobotics_jdlib_JDlib_SVMNuTrainer_2Lsite_selyerobotics_jdlib_JDlib_VectorM_2Lsite_selyerobotics_jdlib_JDlib_Vectord_2J(
+Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction2(
   JNIEnv* env,
   jclass parent,
   jobject jtrainer,
@@ -156,17 +157,19 @@ Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction__Lsite_se
   auto& samples = memoryManager.Get<samples_type>(env, jsamples);
   auto& labels = memoryManager.Get<labels_type>(env, jlabels);
 
-  auto ProbabilisticDecisionFunction =
+  probabilistic_funct_type ProbabilisticDecisionFunction =
     dlib::train_probabilistic_decision_function(trainer, samples, labels, fold);
 
-  return memoryManager.CreateNative(
+  auto result = memoryManager.CreateNative(
     env,
     "site/selyerobotics/jdlib/JDlib$ProbabilisticDecisionFunction",
     ProbabilisticDecisionFunction);
+
+  return result;
 }
 
 jobject
-Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction__Lsite_selyerobotics_jdlib_JDlib_ReducedDecisionFunctionTrainer2_2Lsite_selyerobotics_jdlib_JDlib_VectorM_2Lsite_selyerobotics_jdlib_JDlib_Vectord_2J(
+Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction3(
   JNIEnv* env,
   jclass thisObj,
   jobject jtrainer,
@@ -176,14 +179,44 @@ Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction__Lsite_se
 {
   auto& trainer =
     memoryManager.Get<ReducedDecisionFunctionTrainer2_type>(env, jtrainer);
+
   auto& samples = memoryManager.Get<samples_type>(env, jsamples);
   auto& labels = memoryManager.Get<labels_type>(env, jlabels);
 
-  auto ProbabilisticDecisionFunction =
+  probabilistic_funct_type ProbabilisticDecisionFunction =
     dlib::train_probabilistic_decision_function(trainer, samples, labels, fold);
 
   return memoryManager.CreateNative(
     env,
     "site/selyerobotics/jdlib/JDlib$ProbabilisticDecisionFunction",
     ProbabilisticDecisionFunction);
+}
+
+jobject
+Java_site_selyerobotics_jdlib_JDlib_CrossValidateTrainerReduced(
+  JNIEnv* env,
+  jclass thisObj,
+  jobject jReducedDecisionFunction,
+  jobject jsamples,
+  jobject jlabels,
+  jlong fold)
+{
+  assert(env);
+  assert(thisObj);
+  assert(jReducedDecisionFunction);
+  assert(jsamples);
+  assert(jlabels);
+
+  auto& reduced = memoryManager.Get<ReducedDecisionFunctionTrainer2_type>(
+    env, jReducedDecisionFunction);
+
+  auto& samples = memoryManager.Get<samples_type>(env, jsamples);
+
+  auto& labels = memoryManager.Get<labels_type>(env, jlabels);
+
+  sample_type accuracy =
+    dlib::cross_validate_trainer(reduced, samples, labels, fold);
+
+  return memoryManager.CreateNative(
+    env, "site/selyerobotics/jdlib/JDlib$Matrix", accuracy);
 }

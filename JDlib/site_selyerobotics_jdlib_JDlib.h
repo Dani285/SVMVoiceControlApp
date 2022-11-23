@@ -9,18 +9,18 @@ extern "C" {
 #endif
 /*
  * Class:     site_selyerobotics_jdlib_JDlib
- * Method:    TrainProbabilisticDecisionFunction
+ * Method:    TrainProbabilisticDecisionFunction2
  * Signature: (Lsite/selyerobotics/jdlib/JDlib/SVMNuTrainer;Lsite/selyerobotics/jdlib/JDlib/VectorM;Lsite/selyerobotics/jdlib/JDlib/Vectord;J)Lsite/selyerobotics/jdlib/JDlib/ProbabilisticDecisionFunction;
  */
-JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction__Lsite_selyerobotics_jdlib_JDlib_SVMNuTrainer_2Lsite_selyerobotics_jdlib_JDlib_VectorM_2Lsite_selyerobotics_jdlib_JDlib_Vectord_2J
+JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction2
   (JNIEnv *, jclass, jobject, jobject, jobject, jlong);
 
 /*
  * Class:     site_selyerobotics_jdlib_JDlib
- * Method:    TrainProbabilisticDecisionFunction
+ * Method:    TrainProbabilisticDecisionFunction3
  * Signature: (Lsite/selyerobotics/jdlib/JDlib/ReducedDecisionFunctionTrainer2;Lsite/selyerobotics/jdlib/JDlib/VectorM;Lsite/selyerobotics/jdlib/JDlib/Vectord;J)Lsite/selyerobotics/jdlib/JDlib/ProbabilisticDecisionFunction;
  */
-JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction__Lsite_selyerobotics_jdlib_JDlib_ReducedDecisionFunctionTrainer2_2Lsite_selyerobotics_jdlib_JDlib_VectorM_2Lsite_selyerobotics_jdlib_JDlib_Vectord_2J
+JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction3
   (JNIEnv *, jclass, jobject, jobject, jobject, jlong);
 
 /*
@@ -57,34 +57,42 @@ JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_CrossValidateTrain
 
 /*
  * Class:     site_selyerobotics_jdlib_JDlib
- * Method:    Serialize
+ * Method:    CrossValidateTrainerReduced
+ * Signature: (Lsite/selyerobotics/jdlib/JDlib/ReducedDecisionFunctionTrainer2;Lsite/selyerobotics/jdlib/JDlib/VectorM;Lsite/selyerobotics/jdlib/JDlib/Vectord;J)Lsite/selyerobotics/jdlib/JDlib/Matrix;
+ */
+JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_CrossValidateTrainerReduced
+  (JNIEnv *, jclass, jobject, jobject, jobject, jlong);
+
+/*
+ * Class:     site_selyerobotics_jdlib_JDlib
+ * Method:    SerializeLearnedFunction
  * Signature: (Ljava/lang/String;Lsite/selyerobotics/jdlib/JDlib/LearnedFunction;)V
  */
-JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_Serialize__Ljava_lang_String_2Lsite_selyerobotics_jdlib_JDlib_LearnedFunction_2
+JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_SerializeLearnedFunction
   (JNIEnv *, jclass, jstring, jobject);
 
 /*
  * Class:     site_selyerobotics_jdlib_JDlib
- * Method:    Serialize
+ * Method:    SerializeNormalizedProbabilisticFunction
  * Signature: (Ljava/lang/String;Lsite/selyerobotics/jdlib/JDlib/NormalizedProbabilisticFunction;)V
  */
-JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_Serialize__Ljava_lang_String_2Lsite_selyerobotics_jdlib_JDlib_NormalizedProbabilisticFunction_2
+JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_SerializeNormalizedProbabilisticFunction
   (JNIEnv *, jclass, jstring, jobject);
 
 /*
  * Class:     site_selyerobotics_jdlib_JDlib
- * Method:    Deserialize
+ * Method:    DeserializeLearnedFunction
  * Signature: (Ljava/lang/String;Lsite/selyerobotics/jdlib/JDlib/LearnedFunction;)V
  */
-JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_Deserialize__Ljava_lang_String_2Lsite_selyerobotics_jdlib_JDlib_LearnedFunction_2
+JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_DeserializeLearnedFunction
   (JNIEnv *, jclass, jstring, jobject);
 
 /*
  * Class:     site_selyerobotics_jdlib_JDlib
- * Method:    Deserialize
+ * Method:    DeserializeNormalizedProbabilisticFunction
  * Signature: (Ljava/lang/String;Lsite/selyerobotics/jdlib/JDlib/NormalizedProbabilisticFunction;)V
  */
-JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_Deserialize__Ljava_lang_String_2Lsite_selyerobotics_jdlib_JDlib_NormalizedProbabilisticFunction_2
+JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_DeserializeNormalizedProbabilisticFunction
   (JNIEnv *, jclass, jstring, jobject);
 
 #ifdef __cplusplus
