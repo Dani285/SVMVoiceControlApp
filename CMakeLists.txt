@@ -23,27 +23,34 @@ add_executable(svmtrain main.cpp)
 set(CMAKE_JNI_TARGET TRUE)
 
 add_library( JDlib
-  JDlib/types.hpp
+  JDlib/site_selyerobotics_jdlib_JDlib.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib.h
+  JDlib/site_selyerobotics_jdlib_JDlib_DecisionFunction.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_DecisionFunction.h
+  JDlib/site_selyerobotics_jdlib_JDlib_LearnedFunction.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_LearnedFunction.h
+  JDlib/site_selyerobotics_jdlib_JDlib_Matrix.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_Matrix.h
+  JDlib/site_selyerobotics_jdlib_JDlib_NormalizedProbabilisticFunction.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_NormalizedProbabilisticFunction.h
+  JDlib/site_selyerobotics_jdlib_JDlib_ProbabilisticDecisionFunction.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_ProbabilisticDecisionFunction.h
+  JDlib/site_selyerobotics_jdlib_JDlib_RBF.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_RBF.h
+  JDlib/site_selyerobotics_jdlib_JDlib_ReducedDecisionFunctionTrainer2.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_ReducedDecisionFunctionTrainer2.h
+  JDlib/site_selyerobotics_jdlib_JDlib_SVMNuTrainer.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_SVMNuTrainer.h
+  JDlib/site_selyerobotics_jdlib_JDlib_VectorM.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_VectorM.h
+  JDlib/site_selyerobotics_jdlib_JDlib_VectorNormalizer.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_VectorNormalizer.h
+  JDlib/site_selyerobotics_jdlib_JDlib_Vectord.cpp
+  JDlib/site_selyerobotics_jdlib_JDlib_Vectord.h
   memorymanager.cpp
   memorymanager.hpp
-  JDlib/site_selyerobotics_jdlib_JDlib.h
-  JDlib/site_selyerobotics_jdlib_JDlib_LearnedFunction.h
-  JDlib/site_selyerobotics_jdlib_JDlib_Matrix.h
-  JDlib/site_selyerobotics_jdlib_JDlib_NormalizedProbabilisticFunction.h
-  JDlib/site_selyerobotics_jdlib_JDlib_RBF.h
-  JDlib/site_selyerobotics_jdlib_JDlib_SVMNuTrainer.h
-  JDlib/site_selyerobotics_jdlib_JDlib_Vectord.h
-  JDlib/site_selyerobotics_jdlib_JDlib_VectorM.h
-  JDlib/site_selyerobotics_jdlib_JDlib_VectorNormalizer.h
-  JDlib/site_selyerobotics_jdlib_JDlib.cpp
-  JDlib/site_selyerobotics_jdlib_JDlib_LearnedFunction.cpp
-  JDlib/site_selyerobotics_jdlib_JDlib_Matrix.cpp
-  JDlib/site_selyerobotics_jdlib_JDlib_NormalizedProbabilisticFunction.cpp
-  JDlib/site_selyerobotics_jdlib_JDlib_RBF.cpp
-  JDlib/site_selyerobotics_jdlib_JDlib_SVMNuTrainer.cpp
-  JDlib/site_selyerobotics_jdlib_JDlib_Vectord.cpp
-  JDlib/site_selyerobotics_jdlib_JDlib_VectorM.cpp
-  JDlib/site_selyerobotics_jdlib_JDlib_VectorNormalizer.cpp
+  types.hpp
+
 )
 
 install(TARGETS svmtrain

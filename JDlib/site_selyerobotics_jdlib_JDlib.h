@@ -10,9 +10,17 @@ extern "C" {
 /*
  * Class:     site_selyerobotics_jdlib_JDlib
  * Method:    TrainProbabilisticDecisionFunction
- * Signature: (Lsite/selyerobotics/jdlib/JDlib/SVMNuTrainer;Lsite/selyerobotics/jdlib/JDlib/VectorM;Lsite/selyerobotics/jdlib/JDlib/Vectord;J)Lsite/selyerobotics/jdlib/JDlib/DecisionFunction;
+ * Signature: (Lsite/selyerobotics/jdlib/JDlib/SVMNuTrainer;Lsite/selyerobotics/jdlib/JDlib/VectorM;Lsite/selyerobotics/jdlib/JDlib/Vectord;J)Lsite/selyerobotics/jdlib/JDlib/ProbabilisticDecisionFunction;
  */
-JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction
+JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction__Lsite_selyerobotics_jdlib_JDlib_SVMNuTrainer_2Lsite_selyerobotics_jdlib_JDlib_VectorM_2Lsite_selyerobotics_jdlib_JDlib_Vectord_2J
+  (JNIEnv *, jclass, jobject, jobject, jobject, jlong);
+
+/*
+ * Class:     site_selyerobotics_jdlib_JDlib
+ * Method:    TrainProbabilisticDecisionFunction
+ * Signature: (Lsite/selyerobotics/jdlib/JDlib/ReducedDecisionFunctionTrainer2;Lsite/selyerobotics/jdlib/JDlib/VectorM;Lsite/selyerobotics/jdlib/JDlib/Vectord;J)Lsite/selyerobotics/jdlib/JDlib/ProbabilisticDecisionFunction;
+ */
+JNIEXPORT jobject JNICALL Java_site_selyerobotics_jdlib_JDlib_TrainProbabilisticDecisionFunction__Lsite_selyerobotics_jdlib_JDlib_ReducedDecisionFunctionTrainer2_2Lsite_selyerobotics_jdlib_JDlib_VectorM_2Lsite_selyerobotics_jdlib_JDlib_Vectord_2J
   (JNIEnv *, jclass, jobject, jobject, jobject, jlong);
 
 /*

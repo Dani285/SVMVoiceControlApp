@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     site_selyerobotics_jdlib_JDlib_DecisionFunction
+ * Method:    Evaluate
+ * Signature: (Lsite/selyerobotics/jdlib/JDlib/Matrix;)D
+ */
+JNIEXPORT jdouble JNICALL Java_site_selyerobotics_jdlib_JDlib_00024DecisionFunction_Evaluate
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     site_selyerobotics_jdlib_JDlib_DecisionFunction
  * Method:    init
  * Signature: ()V
  */

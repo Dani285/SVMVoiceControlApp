@@ -17,5 +17,7 @@ using normalized_probabilistic_function_type =
   dlib::normalized_function<probabilistic_funct_type>;
 using samples_type = std::vector<sample_type>;
 using labels_type = std::vector<double>;
+using ReducedDecisionFunctionTrainer2_type =
+  dlib::reduced_decision_function_trainer2<svm_nu_trainer_type>;
 
 #endif // TYPES_HPP

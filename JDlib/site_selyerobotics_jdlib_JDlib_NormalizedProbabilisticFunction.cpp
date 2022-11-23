@@ -11,8 +11,8 @@ Java_site_selyerobotics_jdlib_JDlib_00024NormalizedProbabilisticFunction_Evaluat
   jobject thisObj,
   jobject sample)
 {
-  return memoryManager.Get<normalized_probabilistic_function_type>(thisObj)(
-    memoryManager.Get<sample_type>(sample));
+  return memoryManager.Get<normalized_probabilistic_function_type>(
+    env, thisObj)(memoryManager.Get<sample_type>(env, sample));
 }
 
 void
@@ -21,8 +21,8 @@ Java_site_selyerobotics_jdlib_JDlib_00024NormalizedProbabilisticFunction_SetNorm
   jobject thisObj,
   jobject normalizer)
 {
-  memoryManager.Get<normalized_probabilistic_function_type>(thisObj)
-    .normalizer = memoryManager.Get<normalizer_type>(normalizer);
+  memoryManager.Get<normalized_probabilistic_function_type>(env, thisObj)
+    .normalizer = memoryManager.Get<normalizer_type>(env, normalizer);
 }
 
 void
@@ -31,8 +31,8 @@ Java_site_selyerobotics_jdlib_JDlib_00024NormalizedProbabilisticFunction_SetFunc
   jobject thisObj,
   jobject function)
 {
-  memoryManager.Get<normalized_probabilistic_function_type>(thisObj).function =
-    memoryManager.Get<probabilistic_funct_type>(function);
+  memoryManager.Get<normalized_probabilistic_function_type>(env, thisObj)
+    .function = memoryManager.Get<probabilistic_funct_type>(env, function);
 }
 
 jlong
@@ -40,7 +40,7 @@ Java_site_selyerobotics_jdlib_JDlib_00024NormalizedProbabilisticFunction_BasisVe
   JNIEnv* env,
   jobject thisObj)
 {
-  return memoryManager.Get<normalized_probabilistic_function_type>(thisObj)
+  return memoryManager.Get<normalized_probabilistic_function_type>(env, thisObj)
     .function.decision_funct.basis_vectors.size();
 }
 
@@ -49,7 +49,7 @@ Java_site_selyerobotics_jdlib_JDlib_00024NormalizedProbabilisticFunction_init(
   JNIEnv* env,
   jobject thisObj)
 {
-  memoryManager.Create<normalized_probabilistic_function_type>(thisObj);
+  memoryManager.Create<normalized_probabilistic_function_type>(env, thisObj);
 }
 
 void
@@ -57,5 +57,5 @@ Java_site_selyerobotics_jdlib_JDlib_00024NormalizedProbabilisticFunction_Dispose
   JNIEnv* env,
   jobject thisObj)
 {
-  memoryManager.Dispose(thisObj);
+  memoryManager.Dispose(env, thisObj);
 }

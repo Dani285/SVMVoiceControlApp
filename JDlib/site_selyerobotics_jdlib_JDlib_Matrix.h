@@ -47,6 +47,22 @@ JNIEXPORT jdouble JNICALL Java_site_selyerobotics_jdlib_JDlib_00024Matrix_get
 JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_00024Matrix_Dispose
   (JNIEnv *, jobject);
 
+/*
+ * Class:     site_selyerobotics_jdlib_JDlib_Matrix
+ * Method:    nc
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_site_selyerobotics_jdlib_JDlib_00024Matrix_nc
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     site_selyerobotics_jdlib_JDlib_Matrix
+ * Method:    nr
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_site_selyerobotics_jdlib_JDlib_00024Matrix_nr
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

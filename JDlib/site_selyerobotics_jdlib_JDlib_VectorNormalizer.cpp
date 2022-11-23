@@ -10,8 +10,8 @@ Java_site_selyerobotics_jdlib_JDlib_00024VectorNormalizer_Train(
   jobject thisObj,
   jobject jsamples)
 {
-  auto& normalizer = memoryManager.Get<normalizer_type>(thisObj);
-  auto& samples = memoryManager.Get<samples_type>(jsamples);
+  auto& normalizer = memoryManager.Get<normalizer_type>(env, thisObj);
+  auto& samples = memoryManager.Get<samples_type>(env, jsamples);
   normalizer.train(samples);
 }
 
@@ -21,13 +21,12 @@ Java_site_selyerobotics_jdlib_JDlib_00024VectorNormalizer_Normalize(
   jobject thisObj,
   jobject jsample)
 {
-  auto& normalizer = memoryManager.Get<normalizer_type>(thisObj);
-  auto& sample = memoryManager.Get<sample_type>(jsample);
-  jobject jresult = memoryManager.CreateNative<sample_type>(
-    env, "/site/selyerobotics/jdlib/JDlib/Matrix");
+  auto& normalizer = memoryManager.Get<normalizer_type>(env, thisObj);
+  auto& sample = memoryManager.Get<sample_type>(env, jsample);
+  auto normalized_sample = normalizer(sample);
+  jobject jresult = memoryManager.CreateNative(
+    env, "site/selyerobotics/jdlib/JDlib$Matrix", normalized_sample);
 
-  auto& result = memoryManager.Get<sample_type>(jresult);
-  result = normalizer(sample);
   return jresult;
 }
 
@@ -35,7 +34,7 @@ void
 Java_site_selyerobotics_jdlib_JDlib_00024VectorNormalizer_init(JNIEnv* env,
                                                                jobject thisObj)
 {
-  memoryManager.Create<normalizer_type>(thisObj);
+  memoryManager.Create<normalizer_type>(env, thisObj);
 }
 
 void
@@ -43,5 +42,5 @@ Java_site_selyerobotics_jdlib_JDlib_00024VectorNormalizer_Dispose(
   JNIEnv* env,
   jobject thisObj)
 {
-  memoryManager.Dispose(thisObj);
+  memoryManager.Dispose(env, thisObj);
 }

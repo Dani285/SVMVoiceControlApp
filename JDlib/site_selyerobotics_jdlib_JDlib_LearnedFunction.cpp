@@ -12,8 +12,8 @@ Java_site_selyerobotics_jdlib_JDlib_00024LearnedFunction_Evaluate(
   jobject jsample)
 {
   auto& normalized_function =
-    memoryManager.Get<normalized_function_type>(thisObj);
-  auto& sample = memoryManager.Get<sample_type>(jsample);
+    memoryManager.Get<normalized_function_type>(env, thisObj);
+  auto& sample = memoryManager.Get<sample_type>(env, jsample);
 
   return normalized_function(sample);
 }
@@ -25,8 +25,8 @@ Java_site_selyerobotics_jdlib_JDlib_00024LearnedFunction_SetNormalizer(
   jobject jnormalizer)
 {
   auto& normalized_function =
-    memoryManager.Get<normalized_function_type>(thisObj);
-  auto& normalizer = memoryManager.Get<normalizer_type>(jnormalizer);
+    memoryManager.Get<normalized_function_type>(env, thisObj);
+  auto& normalizer = memoryManager.Get<normalizer_type>(env, jnormalizer);
   normalized_function.normalizer = normalizer;
 }
 
@@ -37,8 +37,8 @@ Java_site_selyerobotics_jdlib_JDlib_00024LearnedFunction_SetFunction(
   jobject jfunction)
 {
   auto& normalized_function =
-    memoryManager.Get<normalized_function_type>(thisObj);
-  auto& function = memoryManager.Get<decision_funct_type>(jfunction);
+    memoryManager.Get<normalized_function_type>(env, thisObj);
+  auto& function = memoryManager.Get<decision_funct_type>(env, jfunction);
   normalized_function.function = function;
 }
 
@@ -48,7 +48,7 @@ Java_site_selyerobotics_jdlib_JDlib_00024LearnedFunction_BasisVectorsSize(
   jobject thisObj)
 {
   auto& normalized_function =
-    memoryManager.Get<normalized_function_type>(thisObj);
+    memoryManager.Get<normalized_function_type>(env, thisObj);
   return normalized_function.function.basis_vectors.size();
 }
 
@@ -56,5 +56,13 @@ void
 Java_site_selyerobotics_jdlib_JDlib_00024LearnedFunction_init(JNIEnv* env,
                                                               jobject thisObj)
 {
-  memoryManager.Create<normalized_function_type>(thisObj);
+  memoryManager.Create<normalized_function_type>(env, thisObj);
+}
+
+void
+Java_site_selyerobotics_jdlib_JDlib_00024LearnedFunction_Dispose(
+  JNIEnv* env,
+  jobject thisObj)
+{
+  memoryManager.Dispose(env, thisObj);
 }

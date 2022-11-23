@@ -11,15 +11,15 @@ Java_site_selyerobotics_jdlib_JDlib_00024VectorM_Add(JNIEnv* env,
                                                      jobject thisObj,
                                                      jobject matrix)
 {
-  memoryManager.Get<samples_type>(thisObj).push_back(
-    memoryManager.Get<sample_type>(matrix));
+  memoryManager.Get<samples_type>(env, thisObj)
+    .push_back(memoryManager.Get<sample_type>(env, matrix));
 }
 
 jlong
 Java_site_selyerobotics_jdlib_JDlib_00024VectorM_Size(JNIEnv* env,
                                                       jobject thisObj)
 {
-  return memoryManager.Get<samples_type>(thisObj).size();
+  return memoryManager.Get<samples_type>(env, thisObj).size();
 }
 
 jobject
@@ -27,13 +27,14 @@ Java_site_selyerobotics_jdlib_JDlib_00024VectorM_Get(JNIEnv* env,
                                                      jobject thisObj,
                                                      jlong index)
 {
+  assert(env);
+  assert(thisObj);
 
-  jobject object = memoryManager.CreateNative<dlib::matrix<double>>(
-    env, "site/selyerobotics/jdlib/JDlib/Matrix");
+  auto& value = memoryManager.Get<samples_type>(env, thisObj).at(index);
+  jobject object = memoryManager.CreateNative(
+    env, "site/selyerobotics/jdlib/JDlib$Matrix", value);
 
-  memoryManager.Get<dlib::matrix<double>>(object) =
-    memoryManager.Get<samples_type>(thisObj).at(index);
-
+  assert(object);
   return object;
 }
 
@@ -43,20 +44,22 @@ Java_site_selyerobotics_jdlib_JDlib_00024VectorM_Set(JNIEnv* env,
                                                      jlong index,
                                                      jobject matrixObj)
 {
-  memoryManager.Get<samples_type>(thisObj).at(index) =
-    memoryManager.Get<sample_type>(matrixObj);
+  assert(env);
+  assert(thisObj);
+  memoryManager.Get<samples_type>(env, thisObj).at(index) =
+    memoryManager.Get<sample_type>(env, matrixObj);
 }
 
 void
 Java_site_selyerobotics_jdlib_JDlib_00024VectorM_init(JNIEnv* env,
                                                       jobject thisObj)
 {
-  memoryManager.Create<samples_type>(thisObj);
+  memoryManager.Create<samples_type>(env, thisObj);
 }
 
 void
 Java_site_selyerobotics_jdlib_JDlib_00024VectorM_Dispose(JNIEnv* env,
                                                          jobject thisObj)
 {
-  memoryManager.Dispose(thisObj);
+  memoryManager.Dispose(env, thisObj);
 }

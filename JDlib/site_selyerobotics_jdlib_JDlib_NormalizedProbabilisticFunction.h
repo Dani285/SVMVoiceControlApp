@@ -34,7 +34,7 @@ JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_00024NormalizedProbab
 /*
  * Class:     site_selyerobotics_jdlib_JDlib_NormalizedProbabilisticFunction
  * Method:    SetFunction
- * Signature: (Lsite/selyerobotics/jdlib/JDlib/DecisionFunction;)V
+ * Signature: (Lsite/selyerobotics/jdlib/JDlib/ProbabilisticDecisionFunction;)V
  */
 JNIEXPORT void JNICALL Java_site_selyerobotics_jdlib_JDlib_00024NormalizedProbabilisticFunction_SetFunction
   (JNIEnv *, jobject, jobject);
