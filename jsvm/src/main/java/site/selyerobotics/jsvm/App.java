@@ -53,7 +53,6 @@ public class App {
     // std::vector<double> labels;
 
     var samples = new JDlib.VectorM();
-
     var labels = new JDlib.Vectord();
 
     // Now let's put some data into our samples and labels objects. We do this by
@@ -63,7 +62,7 @@ public class App {
       for (int c = -20; c <= 20; ++c) {
         var samp = new JDlib.Matrix(2, 1);
         samp.set(0, 0, r);
-        samp.set(0, 1, c);
+        samp.set(1, 0, c);
         samples.Add(samp);
 
         // if this point is less than 10 from the origin
@@ -81,19 +80,13 @@ public class App {
     // I'm just doing this here so you can see an easy way to accomplish this with
     // the library.
     var normalizer = new JDlib.VectorNormalizer();
-
     // let the normalizer learn the mean and standard deviation of the samples
     normalizer.Train(samples);
-
     // now normalize each sample
     for (long i = 0; i < samples.Size(); ++i) {
-
       var sample = samples.Get(i);
-
       var normalized = normalizer.Normalize(sample);
-
       samples.Set(i, normalized);
-
     }
 
     // Now that we have some data we want to train on it. However, there are two
@@ -108,15 +101,12 @@ public class App {
     // would screw up the cross validation process but we can fix it by
     // randomizing the order of the samples with the following function call.
     JDlib.RandomizeSamples(samples, labels);
-
     // The nu parameter has a maximum value that is dependent on the ratio of the
     // +1 to -1 labels in the training data. This function finds that value.
     final double max_nu = JDlib.MaximumNu(labels);
-
     // here we make an instance of the svm_nu_trainer object that uses our kernel
     // type.
     var trainer = new JDlib.SVMNuTrainer();
-
     // Now we loop over some different nu and gamma values to see how good they
     // are. Note that this is a very simple way to try out a few possible
     // parameter choices. You should look at the model_selection_ex.cpp program
@@ -258,10 +248,9 @@ public class App {
     // processing
     // during the creation of decision function objects.
     System.out.println(
-    "\ncross validation accuracy with only 10 support vectors: " +
-    JDlib.CrossValidateTrainerReduced( JDlib.Reduced2(trainer, 10, 1e-3), samples,
-    labels, 3)
-    );
+        "\ncross validation accuracy with only 10 support vectors: " +
+            JDlib.CrossValidateTrainerReduced(JDlib.Reduced2(trainer, 10, 1e-3), samples,
+                labels, 3));
 
     // Let's print out the original cross validation score too for comparison.
     System.out.println(
@@ -274,7 +263,7 @@ public class App {
 
     // To get the reduced decision function out we would just do this:
     learned_function.SetFunction(JDlib.Reduced2(trainer, 10, 1e-3).Train(samples,
-    labels));
+        labels));
 
     // And similarly for the probabilistic_decision_function:
     learned_pfunct
