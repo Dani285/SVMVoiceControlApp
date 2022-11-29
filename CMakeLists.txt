@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_SHARED_LIBS ON)
 
-set(JAVA_HOME "/usr/lib64/jvm/java-11-openjdk-11")
+set(JAVA_HOME "C:/Program Files/jdk-19.0.1")
 find_package(Java COMPONENTS Development)
 find_package(JNI REQUIRED)
 include_directories(${JAVA_INCLUDE_PATH})
