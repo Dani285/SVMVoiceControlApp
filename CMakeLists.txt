@@ -13,6 +13,8 @@ include_directories(${JAVA_INCLUDE_PATH})
 include_directories(${JAVA_INCLUDE_PATH2})
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/dlib)
+set( CMAKE_CXX_FLAGS "-fPIC -static -Wall -D_JNI_IMPLEMENTATION_ -Wl,--add-stdcall-alias" CACHE  STRING "" FORCE )
+set( CMAKE_C_FLAGS "-fPIC -static -Wall -D_JNI_IMPLEMENTATION_ -Wl,--add-stdcall-alias" CACHE  STRING "" FORCE )
 
 include(UseJava)
 
@@ -22,7 +24,7 @@ add_executable(svmtrain main.cpp)
 
 set(CMAKE_JNI_TARGET TRUE)
 
-add_library( JDlib
+add_library( JDlib SHARED
   JDlib/site_selyerobotics_jdlib_JDlib.cpp
   JDlib/site_selyerobotics_jdlib_JDlib.h
   JDlib/site_selyerobotics_jdlib_JDlib_DecisionFunction.cpp
