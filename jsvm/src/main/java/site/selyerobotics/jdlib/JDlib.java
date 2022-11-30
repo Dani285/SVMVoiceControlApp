@@ -214,7 +214,8 @@ public class JDlib {
     static public native Matrix CrossValidateTrainer(SVMNuTrainer trainer, VectorM samples, Vectord labels,
             long fold);
 
-    static public native Matrix CrossValidateTrainerReduced(ReducedDecisionFunctionTrainer2 trainer, VectorM samples, Vectord labels,
+    static public native Matrix CrossValidateTrainerReduced(ReducedDecisionFunctionTrainer2 trainer, VectorM samples,
+            Vectord labels,
             long fold);
 
     public static class Vectord extends Native implements AutoCloseable {
