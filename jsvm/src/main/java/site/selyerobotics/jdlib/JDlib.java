@@ -5,7 +5,7 @@ package site.selyerobotics.jdlib;
 public class JDlib {
 
     static {
-        System.loadLibrary("JDlib");
+        System.loadLibrary("libJDlib");
     }
 
     public static class Native {

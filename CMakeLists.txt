@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_SHARED_LIBS ON)
 
-set(JAVA_HOME "/usr/lib64/jvm/java-11-openjdk-11")
+set(JAVA_HOME "C:/Program Files/Java/jdk-15.0.1")
 find_package(Java COMPONENTS Development)
 find_package(JNI REQUIRED)
 include_directories(${JAVA_INCLUDE_PATH})
@@ -22,7 +22,7 @@ add_executable(svmtrain main.cpp)
 
 set(CMAKE_JNI_TARGET TRUE)
 
-add_library( JDlib
+add_library( JDlib SHARED
   JDlib/site_selyerobotics_jdlib_JDlib.cpp
   JDlib/site_selyerobotics_jdlib_JDlib.h
   JDlib/site_selyerobotics_jdlib_JDlib_DecisionFunction.cpp

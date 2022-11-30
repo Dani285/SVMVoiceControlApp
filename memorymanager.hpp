@@ -6,6 +6,8 @@
 #include <jni.h>
 #include <map>
 #include <memory>
+#include <string>
+#include <stdexcept>
 
 class MemoryManager
 {
