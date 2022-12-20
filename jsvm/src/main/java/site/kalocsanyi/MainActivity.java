@@ -2,10 +2,9 @@ package site.kalocsanyi;
 
 import fr.delthas.javamp3.Sound;
 
-import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.*;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,7 +18,8 @@ public class MainActivity {
     }
 
     byte[] getSamples() throws IOException {
-        Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
+        Path audiopath = Paths
+                .get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         try (Sound sample_sound = new Sound(new BufferedInputStream(Files.newInputStream(audiopath)))) {
             System.out.println(sample_sound.getSamplingFrequency());
             byte[] samples = sample_sound.readAllBytes();
@@ -49,13 +49,14 @@ public class MainActivity {
         // recognize words from audio file
         // System.setProperty("java.library.path","C:/Program
         // Files/Java/jdk-15.0.1/bin");
-        Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
+        Path audiopath = Paths
+                .get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         Sound sample_sound = new Sound(new BufferedInputStream(Files.newInputStream(audiopath)));
-        System.out.println(sample_sound.getSamplingFrequency());
+        System.out.println("sample_sound.getSamplingFrequency() = " + sample_sound.getSamplingFrequency());
 
         String paths = "/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3";
         byte[] samples;
-        try (FileInputStream fis = new FileInputStream(paths)) {
+        try (var fis = new FileInputStream(paths)) {
             samples = sample_sound.readAllBytes(); // alternative to use function for getting samples
             fis.read(samples, 0, 32);
         }
@@ -74,7 +75,7 @@ public class MainActivity {
         // fourier.transform();
         // boolean onlyPositive = true;
         // double[] out = fourier.getMagnitude(onlyPositive);
-        DiscreteFourierTransform discreteFourierTransform = new DiscreteFourierTransform();
+        var discreteFourierTransform = new site.kalocsanyi.DiscreteFourierTransform();
         var out = discreteFourierTransform.Transform();
         System.out.println("out.length = " + out.length);
 

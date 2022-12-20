@@ -2,7 +2,6 @@ package site.kalocsanyi;
 
 import java.io.BufferedInputStream;
 
-import com.github.psambit9791.jdsp.transform.DiscreteFourier;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,7 +49,7 @@ public class DiscreteFourierTransform {
         // Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         // byte[] bsamples = getSamples();
         double[] dsamples = getDoubleSamples();
-        var fourier = new DiscreteFourier(dsamples);
+        var fourier = new site.kalocsanyi.DiscreteFourier(dsamples);
         fourier.transform();
         boolean onlyPositive = true;
         double[] out = fourier.getMagnitude(onlyPositive);
