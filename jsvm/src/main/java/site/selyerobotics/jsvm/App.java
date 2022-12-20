@@ -24,7 +24,7 @@ import site.selyerobotics.jdlib.JDlib;
 
 public class App {
   static {
-    System.loadLibrary("JDlib");
+      System.loadLibrary("libJDlib");
   }
 
   public static void main(String[] args) {

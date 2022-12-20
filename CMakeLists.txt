@@ -6,13 +6,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_SHARED_LIBS ON)
 
-set(JAVA_HOME "/usr/lib64/jvm/java-11-openjdk-11")
+<<<<<<< HEAD
+set(JAVA_HOME "C:/Program Files/Java/jdk-15.0.1")
+=======
+set(JAVA_HOME "C:/Program Files/jdk-19.0.1")
+>>>>>>> bae840042a0df9d60f8ba04fbe16a28031711f53
 find_package(Java COMPONENTS Development)
 find_package(JNI REQUIRED)
 include_directories(${JAVA_INCLUDE_PATH})
 include_directories(${JAVA_INCLUDE_PATH2})
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/dlib)
+set( CMAKE_CXX_FLAGS "-fPIC -static -Wall -D_JNI_IMPLEMENTATION_ -Wl,--add-stdcall-alias" CACHE  STRING "" FORCE )
+set( CMAKE_C_FLAGS "-fPIC -static -Wall -D_JNI_IMPLEMENTATION_ -Wl,--add-stdcall-alias" CACHE  STRING "" FORCE )
 
 include(UseJava)
 
@@ -22,7 +28,7 @@ add_executable(svmtrain main.cpp)
 
 set(CMAKE_JNI_TARGET TRUE)
 
-add_library( JDlib
+add_library( JDlib SHARED
   JDlib/site_selyerobotics_jdlib_JDlib.cpp
   JDlib/site_selyerobotics_jdlib_JDlib.h
   JDlib/site_selyerobotics_jdlib_JDlib_DecisionFunction.cpp
