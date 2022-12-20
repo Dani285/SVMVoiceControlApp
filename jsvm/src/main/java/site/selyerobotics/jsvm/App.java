@@ -155,131 +155,135 @@ public class App {
     // Here we are making an instance of the normalized_function object. This
     // object provides a convenient way to store the vector normalization
     // information along with the decision function we are going to learn.
-    var learned_function = new JDlib.LearnedFunction();
-    learned_function.SetNormalizer(normalizer); // save normalization information
-    learned_function.SetFunction(trainer.Train(samples, labels)); // perform the actual SVM training and save the
-                                                                  // results
+    try (var learned_function = new JDlib.LearnedFunction()) {
+      learned_function.SetNormalizer(normalizer); // save normalization information
+      learned_function.SetFunction(trainer.Train(samples, labels)); // perform the actual SVM training and save the
+                                                                    // results
 
-    // print out the number of support vectors in the resulting decision function
-    System.out.println("\nnumber of support vectors in our learned_function is "
-        + learned_function.BasisVectorsSize());
+      // print out the number of support vectors in the resulting decision function
+      System.out.println("\nnumber of support vectors in our learned_function is "
+          + learned_function.BasisVectorsSize());
 
-    // Now let's try this decision_function on some samples we haven't seen
-    // before.
-    var sample = new JDlib.Matrix(2, 1);
+      // Now let's try this decision_function on some samples we haven't seen
+      // before.
+      var sample = new JDlib.Matrix(2, 1);
 
-    sample.set(0, 0, 3.123);
-    sample.set(1, 0, 2);
-    System.out.println("This is a +1 class example, the classifier output is "
-        + learned_function.Evaluate(sample));
+      sample.set(0, 0, 3.123);
+      sample.set(1, 0, 2);
+      System.out.println("This is a +1 class example, the classifier output is "
+          + learned_function.Evaluate(sample));
 
-    sample.set(0, 0, 3.123);
-    sample.set(1, 0, 9.3545);
-    System.out.println("This is a +1 class example, the classifier output is "
-        + learned_function.Evaluate(sample));
+      sample.set(0, 0, 3.123);
+      sample.set(1, 0, 9.3545);
+      System.out.println("This is a +1 class example, the classifier output is "
+          + learned_function.Evaluate(sample));
 
-    sample.set(0, 0, 13.123);
-    sample.set(1, 0, 9.3545);
-    System.out.println("This is a -1 class example, the classifier output is "
-        + learned_function.Evaluate(sample));
+      sample.set(0, 0, 13.123);
+      sample.set(1, 0, 9.3545);
+      System.out.println("This is a -1 class example, the classifier output is "
+          + learned_function.Evaluate(sample));
 
-    sample.set(0, 0, 13.123);
-    sample.set(1, 0, 0);
-    System.out.println("This is a -1 class example, the classifier output is "
-        + learned_function.Evaluate(sample));
+      sample.set(0, 0, 13.123);
+      sample.set(1, 0, 0);
+      System.out.println("This is a -1 class example, the classifier output is "
+          + learned_function.Evaluate(sample));
 
-    // We can also train a decision function that reports a well conditioned
-    // probability instead of just a number > 0 for the +1 class and < 0 for the
-    // -1 class. An example of doing that follows:
-    // using probabilistic_funct_type =
-    // dlib::probabilistic_decision_function<kernel_type>;
-    // using pfunct_type = dlib::normalized_function<probabilistic_funct_type>;
+      // We can also train a decision function that reports a well conditioned
+      // probability instead of just a number > 0 for the +1 class and < 0 for the
+      // -1 class. An example of doing that follows:
+      // using probabilistic_funct_type =
+      // dlib::probabilistic_decision_function<kernel_type>;
+      // using pfunct_type = dlib::normalized_function<probabilistic_funct_type>;
 
-    var learned_pfunct = new JDlib.NormalizedProbabilisticFunction();
-    learned_pfunct.SetNormalizer(normalizer);
-    var probabilisticDecisionFunction = JDlib.TrainProbabilisticDecisionFunction2(trainer, samples, labels, 3);
-    learned_pfunct.SetFunction(probabilisticDecisionFunction);
+      var learned_pfunct = new JDlib.NormalizedProbabilisticFunction();
+      learned_pfunct.SetNormalizer(normalizer);
+      var probabilisticDecisionFunction = JDlib.TrainProbabilisticDecisionFunction2(trainer, samples, labels, 3);
+      learned_pfunct.SetFunction(probabilisticDecisionFunction);
 
-    // Now we have a function that returns the probability that a given sample is
-    // of the +1 class.
+      // Now we have a function that returns the probability that a given sample is
+      // of the +1 class.
 
-    // print out the number of support vectors in the resulting decision function.
-    // (it should be the same as in the one above)
-    System.out.println("\nnumber of support vectors in our learned_pfunct is " + learned_pfunct.BasisVectorsSize());
+      // print out the number of support vectors in the resulting decision function.
+      // (it should be the same as in the one above)
+      System.out.println("\nnumber of support vectors in our learned_pfunct is " + learned_pfunct.BasisVectorsSize());
 
-    sample.set(0, 0, 3.123);
-    sample.set(1, 0, 2);
-    System.out.println(
-        "This +1 class example should have high probability.  Its probability is: " + learned_pfunct.Evaluate(sample));
+      sample.set(0, 0, 3.123);
+      sample.set(1, 0, 2);
+      System.out.println(
+          "This +1 class example should have high probability.  Its probability is: "
+              + learned_pfunct.Evaluate(sample));
 
-    sample.set(0, 0, 3.123);
-    sample.set(1, 0, 9.3545);
-    System.out.println(
-        "This +1 class example should have high probability.  Its probability is: " + learned_pfunct.Evaluate(sample));
+      sample.set(0, 0, 3.123);
+      sample.set(1, 0, 9.3545);
+      System.out.println(
+          "This +1 class example should have high probability.  Its probability is: "
+              + learned_pfunct.Evaluate(sample));
 
-    sample.set(0, 0, 13.123);
-    sample.set(1, 0, 9.3545);
-    System.out.println(
-        "This -1 class example should have low probability.  Its probability is: " + learned_pfunct.Evaluate(sample));
+      sample.set(0, 0, 13.123);
+      sample.set(1, 0, 9.3545);
+      System.out.println(
+          "This -1 class example should have low probability.  Its probability is: " + learned_pfunct.Evaluate(sample));
 
-    sample.set(0, 0, 13.123);
-    sample.set(1, 0, 0);
-    System.out.println(
-        "This -1 class example should have low probability.  Its probability is: " + learned_pfunct.Evaluate(sample));
+      sample.set(0, 0, 13.123);
+      sample.set(1, 0, 0);
+      System.out.println(
+          "This -1 class example should have low probability.  Its probability is: " + learned_pfunct.Evaluate(sample));
 
-    // Another thing that is worth knowing is that just about everything in dlib
-    // is serializable. So for example, you can save the learned_pfunct object to
-    // disk and recall it later like so:
+      // Another thing that is worth knowing is that just about everything in dlib
+      // is serializable. So for example, you can save the learned_pfunct object to
+      // disk and recall it later like so:
 
-    JDlib.SerializeNormalizedProbabilisticFunction("saved_function.dat", learned_pfunct);
+      JDlib.SerializeNormalizedProbabilisticFunction("saved_function.dat", learned_pfunct);
 
-    // Now let's open that file back up and load the function object it contains.
-    JDlib.DeserializeNormalizedProbabilisticFunction("saved_function.dat", learned_pfunct);
+      // Now let's open that file back up and load the function object it contains.
+      JDlib.DeserializeNormalizedProbabilisticFunction("saved_function.dat", learned_pfunct);
 
-    // Note that there is also an example program that comes with dlib called the
-    // file_to_code_ex.cpp example. It is a simple program that takes a file and
-    // outputs a piece of C++ code that is able to fully reproduce the file's
-    // contents in the form of a std::string object. So you can use that along
-    // with the std::istringstream to save learned decision functions inside your
-    // actual C++ code files if you want.
+      // Note that there is also an example program that comes with dlib called the
+      // file_to_code_ex.cpp example. It is a simple program that takes a file and
+      // outputs a piece of C++ code that is able to fully reproduce the file's
+      // contents in the form of a std::string object. So you can use that along
+      // with the std::istringstream to save learned decision functions inside your
+      // actual C++ code files if you want.
 
-    // Lastly, note that the decision functions we trained above involved well
-    // over 200 basis vectors. Support vector machines in general tend to find
-    // decision functions that involve a lot of basis vectors. This is
-    // significant because the more basis vectors in a decision function, the
-    // longer it takes to classify new examples. So dlib provides the ability to
-    // find an approximation to the normal output of a trainer using fewer basis
-    // vectors.
+      // Lastly, note that the decision functions we trained above involved well
+      // over 200 basis vectors. Support vector machines in general tend to find
+      // decision functions that involve a lot of basis vectors. This is
+      // significant because the more basis vectors in a decision function, the
+      // longer it takes to classify new examples. So dlib provides the ability to
+      // find an approximation to the normal output of a trainer using fewer basis
+      // vectors.
 
-    // Here we determine the cross validation accuracy when we approximate the
-    // output using only 10 basis vectors. To do this we use the reduced2()
-    // function. It takes a trainer object and the number of basis vectors to use
-    // and returns a new trainer object that applies the necessary post
-    // processing
-    // during the creation of decision function objects.
-    System.out.println(
-    "\ncross validation accuracy with only 10 support vectors: " +
-    JDlib.CrossValidateTrainerReduced( JDlib.Reduced2(trainer, 10, 1e-3), samples,
-    labels, 3)
-    );
+      // Here we determine the cross validation accuracy when we approximate the
+      // output using only 10 basis vectors. To do this we use the reduced2()
+      // function. It takes a trainer object and the number of basis vectors to use
+      // and returns a new trainer object that applies the necessary post
+      // processing
+      // during the creation of decision function objects.
+      System.out.println(
+          "\ncross validation accuracy with only 10 support vectors: " +
+              JDlib.CrossValidateTrainerReduced(JDlib.Reduced2(trainer, 10, 1e-3), samples,
+                  labels, 3));
 
-    // Let's print out the original cross validation score too for comparison.
-    System.out.println(
-        "cross validation accuracy with all the original support vectors: " +
-            JDlib.CrossValidateTrainer(trainer, samples, labels, 3));
+      // Let's print out the original cross validation score too for comparison.
+      System.out.println(
+          "cross validation accuracy with all the original support vectors: " +
+              JDlib.CrossValidateTrainer(trainer, samples, labels, 3));
 
-    // When you run this program you should see that, for this problem, you can
-    // reduce the number of basis vectors down to 10 without hurting the cross
-    // validation accuracy.
+      // When you run this program you should see that, for this problem, you can
+      // reduce the number of basis vectors down to 10 without hurting the cross
+      // validation accuracy.
 
-    // To get the reduced decision function out we would just do this:
-    learned_function.SetFunction(JDlib.Reduced2(trainer, 10, 1e-3).Train(samples,
-    labels));
+      // To get the reduced decision function out we would just do this:
+      learned_function.SetFunction(JDlib.Reduced2(trainer, 10, 1e-3).Train(samples,
+          labels));
 
-    // And similarly for the probabilistic_decision_function:
-    learned_pfunct
-        .SetFunction(JDlib.TrainProbabilisticDecisionFunction3(JDlib.Reduced2(trainer, 10, 1e-3), samples, labels, 3));
-
+      // And similarly for the probabilistic_decision_function:
+      learned_pfunct
+          .SetFunction(
+              JDlib.TrainProbabilisticDecisionFunction3(JDlib.Reduced2(trainer, 10, 1e-3), samples, labels, 3));
+    } catch ( Exception ex ) {
+      
+    }
   }
 
 }
