@@ -12,14 +12,14 @@ import java.nio.file.Paths;
 
 public class MainActivity {
     SVMModel svm_model = new SVMModel();
-    File file = new File("C:/Users/kaloc/Desktop/Java/audio1.mp3");
+    // File file = new File("C:/Users/kaloc/Desktop/Java/audio1.mp3");
 
     public MainActivity() {
 
     }
 
     byte[] getSamples() throws IOException {
-        Path audiopath = Paths.get("C:/Users/kaloc/Desktop/Java/audio1.mp3");
+        Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         try (Sound sample_sound = new Sound(new BufferedInputStream(Files.newInputStream(audiopath)))) {
             System.out.println(sample_sound.getSamplingFrequency());
             byte[] samples = sample_sound.readAllBytes();
@@ -49,11 +49,11 @@ public class MainActivity {
         // recognize words from audio file
         // System.setProperty("java.library.path","C:/Program
         // Files/Java/jdk-15.0.1/bin");
-        Path audiopath = Paths.get("C:/Users/kaloc/Desktop/Corpus/Clips/common_voice_en_21875014.mp3");
+        Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         Sound sample_sound = new Sound(new BufferedInputStream(Files.newInputStream(audiopath)));
         System.out.println(sample_sound.getSamplingFrequency());
 
-        String paths = "C:/Users/kaloc/Desktop/Corpus/Clips/common_voice_en_21875014.mp3";
+        String paths = "/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3";
         byte[] samples;
         try (FileInputStream fis = new FileInputStream(paths)) {
             samples = sample_sound.readAllBytes(); // alternative to use function for getting samples
@@ -77,21 +77,6 @@ public class MainActivity {
         DiscreteFourierTransform discreteFourierTransform = new DiscreteFourierTransform();
         var out = discreteFourierTransform.Transform();
         System.out.println("out.length = " + out.length);
-
-        final Field sysPathsField;
-        try {
-            sysPathsField = ClassLoader.class.getDeclaredField("C:/Program Files/Java/jdk-15.0.1/bin");
-            sysPathsField.setAccessible(true);
-            try {
-                sysPathsField.set(null, null);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        // Files.copy(sample_sound,
-        // Paths.get("C:/Users/kaloc/Desktop/Java/audio3.raw"));
 
         var samples2 = new SVMModel.VectorM();
 

@@ -11,7 +11,7 @@ import fr.delthas.javamp3.Sound;
 
 public class DiscreteFourierTransform {
     byte[] getSamples() throws IOException {
-        Path audiopath = Paths.get("C:/Users/kaloc/Desktop/Java/audio1.mp3");
+        Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         try (Sound sample_sound = new Sound(new BufferedInputStream(Files.newInputStream(audiopath)))) {
             System.out.println(sample_sound.getSamplingFrequency());
             byte[] samples = sample_sound.readAllBytes();
@@ -24,7 +24,7 @@ public class DiscreteFourierTransform {
     // implement the bytestoLong function
     // }
     public static double[] toDouble(byte[] byte_array) throws IOException {
-        // Path audiopath = Paths.get("C:/Users/kaloc/Desktop/Java/audio1.mp3");
+        // Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         // Sound sample_sound = new Sound(new
         // BufferedInputStream(Files.newInputStream(audiopath)));
         // System.out.println(sample_sound.getSamplingFrequency());
@@ -37,7 +37,7 @@ public class DiscreteFourierTransform {
     }
 
     public double[] getDoubleSamples() throws IOException {
-        Path audiopath = Paths.get("C:/Users/kaloc/Desktop/Java/audio1.mp3");
+        Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         try (Sound sample_sound = new Sound(new BufferedInputStream(Files.newInputStream(audiopath)))) {
             System.out.println(sample_sound.getSamplingFrequency());
             byte[] samples = sample_sound.readAllBytes();
@@ -47,7 +47,7 @@ public class DiscreteFourierTransform {
     }
 
     public double[] Transform() throws IOException {
-        // Path audiopath = Paths.get("C:/Users/kaloc/Desktop/Java/audio1.mp3");
+        // Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         // byte[] bsamples = getSamples();
         double[] dsamples = getDoubleSamples();
         var fourier = new DiscreteFourier(dsamples);
