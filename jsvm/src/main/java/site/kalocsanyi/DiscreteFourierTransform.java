@@ -45,12 +45,12 @@ public class DiscreteFourierTransform {
         }
     }
 
-    public double[] Transform() throws IOException {
+    public double[] Transform(int size) throws IOException {
         // Path audiopath = Paths.get("/home/ujoimro/Inst/mozillaaudio/cv-corpus-7.0-singleword/en/clips/common_voice_en_22140642.mp3");
         // byte[] bsamples = getSamples();
         double[] dsamples = getDoubleSamples();
         var fourier = new site.kalocsanyi.DiscreteFourier(dsamples);
-        fourier.transform();
+        fourier.transform(size);
         boolean onlyPositive = true;
         double[] out = fourier.getMagnitude(onlyPositive);
         return out;

@@ -75,11 +75,13 @@ public class DiscreteFourier implements com.github.psambit9791.jdsp.transform._F
         return results;
     }
 
+
     /**
      * This function performs the fourier transform on the input signal
      */
-    public void transform() {
-        Complex[] out = new Complex[this.signal.length];
+    public void transform(int size) {
+        assert (size > 0 && size < this.signal.length);
+        Complex[] out = new Complex[size];
 
         for (int k=0; k<out.length; k++) {
             double real = 0;
@@ -200,5 +202,10 @@ public class DiscreteFourier implements com.github.psambit9791.jdsp.transform._F
         }
         System.arraycopy(this.output, 0, dftout, 0, dftout.length);
         return dftout;
+    }
+
+    @Override
+    public void transform() {
+        throw new java.lang.UnsupportedOperationException();
     }
 }

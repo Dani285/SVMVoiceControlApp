@@ -1,6 +1,7 @@
 package site.kalocsanyi;
 
 import fr.delthas.javamp3.Sound;
+import site.selyerobotics.jdlib.JDlib;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -10,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class MainActivity {
-    SVMModel svm_model = new SVMModel();
+    
     // File file = new File("C:/Users/kaloc/Desktop/Java/audio1.mp3");
 
     public MainActivity() {
@@ -76,14 +77,14 @@ public class MainActivity {
         // boolean onlyPositive = true;
         // double[] out = fourier.getMagnitude(onlyPositive);
         var discreteFourierTransform = new site.kalocsanyi.DiscreteFourierTransform();
-        var out = discreteFourierTransform.Transform();
+        var out = discreteFourierTransform.Transform(10);
         System.out.println("out.length = " + out.length);
 
-        var samples2 = new SVMModel.VectorM();
+        var samples2 = new JDlib.VectorM();
 
-        var labels = new SVMModel.Vectord();
+        var labels = new JDlib.Vectord();
 
-        var samp = new SVMModel.Matrix(dsamples.length, 1);
+        var samp = new JDlib.Matrix(dsamples.length, 1);
         for (int i = 0; i < dsamples.length; i++) {
             samp.set(i, 0, dsamples[i]);
         }
@@ -96,7 +97,7 @@ public class MainActivity {
         // from smothering others. Doing this doesn't matter much in this example so
         // I'm just doing this here so you can see an easy way to accomplish this with
         // the library.
-        var normalizer = new SVMModel.VectorNormalizer();
+        var normalizer = new JDlib.VectorNormalizer();
 
         // let the normalizer learn the mean and standard deviation of the samples
         normalizer.Train(samples2);
@@ -123,15 +124,15 @@ public class MainActivity {
         // look like they are from a different distribution than the second half. This
         // would screw up the cross validation process but we can fix it by
         // randomizing the order of the samples with the following function call.
-        SVMModel.RandomizeSamples(samples2, labels);
+        JDlib.RandomizeSamples(samples2, labels);
 
         // The nu parameter has a maximum value that is dependent on the ratio of the
         // +1 to -1 labels in the training data. This function finds that value.
-        final double max_nu = SVMModel.MaximumNu(labels);
+        final double max_nu = JDlib.MaximumNu(labels);
 
         // here we make an instance of the svm_nu_trainer object that uses our kernel
         // type.
-        var trainer = new SVMModel.SVMNuTrainer();
+        var trainer = new JDlib.SVMNuTrainer();
 
         // Now we loop over some different nu and gamma values to see how good they
         // are. Note that this is a very simple way to try out a few possible
@@ -142,7 +143,7 @@ public class MainActivity {
         for (double gamma = 0.00001; gamma <= 1; gamma *= 5) {
             for (double nu = 0.00001; nu < max_nu; nu *= 5) {
                 // tell the trainer the parameters we want to use
-                trainer.SetKernel(new SVMModel.RBF(gamma));
+                trainer.SetKernel(new JDlib.RBF(gamma));
                 trainer.SetNu(nu);
 
                 System.out.println("gamma: " + gamma + "    nu: " + nu);
@@ -152,7 +153,7 @@ public class MainActivity {
                 // examples correctly classified and the second number is the fraction of
                 // -1 training examples correctly classified.
                 System.out.println("     cross validation accuracy: "
-                        + SVMModel.CrossValidateTrainer(trainer, samples2, labels, 3));
+                        + JDlib.CrossValidateTrainer(trainer, samples2, labels, 3));
             }
         }
 
@@ -165,13 +166,13 @@ public class MainActivity {
         // function will return values
         // >= 0 for samples it predicts are in the +1 class and numbers < 0 for
         // samples it predicts to be in the -1 class.
-        trainer.SetKernel(new SVMModel.RBF(0.15625));
+        trainer.SetKernel(new JDlib.RBF(0.15625));
         trainer.SetNu(0.15625);
 
         // Here we are making an instance of the normalized_function object. This
         // object provides a convenient way to store the vector normalization
         // information along with the decision function we are going to learn.
-        try (var learned_function = new SVMModel.LearnedFunction()) {
+        try (var learned_function = new JDlib.LearnedFunction()) {
             learned_function.SetNormalizer(normalizer); // save normalization information
             learned_function.SetFunction(trainer.Train(samples2, labels)); // perform the actual SVM training and save
                                                                            // the
@@ -183,7 +184,7 @@ public class MainActivity {
 
             // Now let's try this decision_function on some samples we haven't seen
             // before.
-            var sample = new SVMModel.Matrix(dsamples.length, 1);
+            var sample = new JDlib.Matrix(dsamples.length, 1);
             for (int i = 0; i < dsamples.length; i++) {
                 sample.set(i, 0, dsamples[i]);
             }
@@ -213,9 +214,9 @@ public class MainActivity {
             // dlib::probabilistic_decision_function<kernel_type>;
             // using pfunct_type = dlib::normalized_function<probabilistic_funct_type>;
 
-            var learned_pfunct = new SVMModel.NormalizedProbabilisticFunction();
+            var learned_pfunct = new JDlib.NormalizedProbabilisticFunction();
             learned_pfunct.SetNormalizer(normalizer);
-            var probabilisticDecisionFunction = SVMModel.TrainProbabilisticDecisionFunction2(trainer, samples2, labels,
+            var probabilisticDecisionFunction = JDlib.TrainProbabilisticDecisionFunction2(trainer, samples2, labels,
                     3);
             learned_pfunct.SetFunction(probabilisticDecisionFunction);
 
@@ -255,10 +256,10 @@ public class MainActivity {
             // is serializable. So for example, you can save the learned_pfunct object to
             // disk and recall it later like so:
 
-            SVMModel.SerializeNormalizedProbabilisticFunction("saved_function.dat", learned_pfunct);
+            JDlib.SerializeNormalizedProbabilisticFunction("saved_function.dat", learned_pfunct);
 
             // Now let's open that file back up and load the function object it contains.
-            SVMModel.DeserializeNormalizedProbabilisticFunction("saved_function.dat", learned_pfunct);
+            JDlib.DeserializeNormalizedProbabilisticFunction("saved_function.dat", learned_pfunct);
 
             // Note that there is also an example program that comes with dlib called the
             // file_to_code_ex.cpp example. It is a simple program that takes a file and
@@ -283,25 +284,25 @@ public class MainActivity {
             // during the creation of decision function objects.
             System.out.println(
                     "\ncross validation accuracy with only 10 support vectors: " +
-                            SVMModel.CrossValidateTrainerReduced(SVMModel.Reduced2(trainer, 10, 1e-3), samples2,
+                            JDlib.CrossValidateTrainerReduced(JDlib.Reduced2(trainer, 10, 1e-3), samples2,
                                     labels, 3));
 
             // Let's print out the original cross validation score too for comparison.
             System.out.println(
                     "cross validation accuracy with all the original support vectors: " +
-                            SVMModel.CrossValidateTrainer(trainer, samples2, labels, 3));
+                            JDlib.CrossValidateTrainer(trainer, samples2, labels, 3));
 
             // When you run this program you should see that, for this problem, you can
             // reduce the number of basis vectors down to 10 without hurting the cross
             // validation accuracy.
 
             // To get the reduced decision function out we would just do this:
-            learned_function.SetFunction(SVMModel.Reduced2(trainer, 10, 1e-3).Train(samples2,
+            learned_function.SetFunction(JDlib.Reduced2(trainer, 10, 1e-3).Train(samples2,
                     labels));
 
             // And similarly for the probabilistic_decision_function:
             learned_pfunct
-                    .SetFunction(SVMModel.TrainProbabilisticDecisionFunction3(SVMModel.Reduced2(trainer, 10, 1e-3),
+                    .SetFunction(JDlib.TrainProbabilisticDecisionFunction3(JDlib.Reduced2(trainer, 10, 1e-3),
                             samples2, labels, 3));
         } catch (Exception ex) {
             System.out.println(ex.toString());
