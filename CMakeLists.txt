@@ -6,23 +6,29 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_SHARED_LIBS ON)
 
-<<<<<<< HEAD
-set(JAVA_HOME "C:/Program Files/Java/jdk-15.0.1")
-=======
-set(JAVA_HOME "C:/Program Files/jdk-19.0.1")
->>>>>>> bae840042a0df9d60f8ba04fbe16a28031711f53
+# assume built-in pthreads on MacOS
+IF(APPLE)
+    set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+    set(CMAKE_HAVE_THREADS_LIBRARY 1)
+    set(CMAKE_USE_WIN32_THREADS_INIT 0)
+    set(CMAKE_USE_PTHREADS_INIT 1)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+ENDIF()
+
+
+set(JAVA_HOME "/Users/dani2000/Library/Java/JavaVirtualMachines/openjdk-21.0.2/Contents/Home")
 find_package(Java COMPONENTS Development)
 find_package(JNI REQUIRED)
 include_directories(${JAVA_INCLUDE_PATH})
 include_directories(${JAVA_INCLUDE_PATH2})
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/dlib)
-set( CMAKE_CXX_FLAGS "-fPIC -static -Wall -D_JNI_IMPLEMENTATION_ -Wl,--add-stdcall-alias" CACHE  STRING "" FORCE )
-set( CMAKE_C_FLAGS "-fPIC -static -Wall -D_JNI_IMPLEMENTATION_ -Wl,--add-stdcall-alias" CACHE  STRING "" FORCE )
+# set( CMAKE_CXX_FLAGS "-fPIC -static -Wall -D_JNI_IMPLEMENTATION_ -Wl,--add-stdcall-alias" CACHE  STRING "" FORCE )
+# set( CMAKE_C_FLAGS "-fPIC -static -Wall -D_JNI_IMPLEMENTATION_ -Wl,--add-stdcall-alias" CACHE  STRING "" FORCE )
 
 include(UseJava)
 
-add_subdirectory(dlib)
+find_package(DLib_LIBRARY NAMES dlib REQUIRED PATHS "/Users/dani2000/Desktop/Bachelor's thesis/build-dlib-Qt_6_6_2_for_macOS-Debug/install/lib/cmake/dlib")
 
 add_executable(svmtrain main.cpp)
 
