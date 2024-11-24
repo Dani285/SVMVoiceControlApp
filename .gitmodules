@@ -1,3 +1,9 @@
 [submodule "dlib"]
 	path = dlib
 	url = https://github.com/davisking/dlib.git
+[submodule "minimp3"]
+	path = minimp3
+	url = https://github.com/lieff/minimp3.git
+[submodule "aquila"]
+	path = aquila
+	url = https://github.com/zsiciarz/aquila.git

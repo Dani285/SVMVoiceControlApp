@@ -17,51 +17,204 @@
     as -1.
 
 */
-
 #include <dlib/svm.h>
 #include <iostream>
+#define MINIMP3_IMPLEMENTATION
+#include <minimp3/minimp3.h>
+#include <QString>
+#include <QFile>
+#include <QtCore>
+#include <vector>
+#include "aquila/aquila.h"
+#include <QtConcurrent/QtConcurrent>
 
-int
-main()
-{
-  // The svm functions use column vectors to contain a lot of the data on which
-  // they operate. So the first thing we do here is declare a convenient
-  // typedef.
+dlib::matrix<double> ExtractFeatures(int32_t size, const std::vector<Aquila::SampleType> & samples, size_t CAPFeatures) {
+    Q_ASSERT(size>0);
+    Q_ASSERT(size<=14);
+    int32_t chunk = 1 << size;
+    std::vector<double> values;
+    int32_t current = 0;
+    while (current <= samples.size()) {
+        // int32_t end = std::min<int32_t>(samples.size(), current + chunk);
+        if (samples.size()<current+chunk) break;
 
-  // This typedef declares a matrix with 2 rows and 1 column.  It will be the
-  // object that contains each of our 2 dimensional samples.   (Note that if you
-  // wanted more than 2 features in this vector you can simply change the 2 to
-  // something else.  Or if you don't know how many features you want until
-  // runtime then you can put a 0 here and use the matrix.set_size() member
-  // function)
-  using sample_type = dlib::matrix<double>;
+        std::vector<Aquila::SampleType> Sample(samples.begin()+current, samples.begin()+current+chunk);
+        current+=chunk;
+        Aquila::SignalSource signalSource(Sample, 48000.0);
+        // std::cout << "signalSource.getSamplesCount() = " << signalSource.getSamplesCount() << std::endl;
+        // std::cout << "time: " << static_cast<double>(Sample.size()) / 48000.0 << "s" <<  std::endl;
+        Aquila::Mfcc mfcc(Sample.size());
+        auto mfccValues = mfcc.calculate(signalSource);
+        values.insert(values.end(),mfccValues.begin(), mfccValues.end());
 
-  // This is a typedef for the type of kernel we are going to use in this
-  // example.  In this case I have selected the radial basis kernel that can
-  // operate on our 2D sample_type objects
-  using kernel_type = dlib::radial_basis_kernel<sample_type>;
-
-  // Now we make objects to contain our samples and their respective labels.
-  std::vector<sample_type> samples;
-  std::vector<double> labels;
-
-  // Now let's put some data into our samples and labels objects.  We do this by
-  // looping over a bunch of points and labeling them according to their
-  // distance from the origin.
-  for (int r = -20; r <= 20; ++r) {
-    for (int c = -20; c <= 20; ++c) {
-      sample_type samp(2, 1);
-      samp(0) = r;
-      samp(1) = c;
-      samples.push_back(samp);
-
-      // if this point is less than 10 from the origin
-      if (sqrt((double)r * r + c * c) <= 10)
-        labels.push_back(+1);
-      else
-        labels.push_back(-1);
+        // std::cout << "MFCC coefficients: \n";
+        // std::copy(
+        //     std::begin(mfccValues),
+        //     std::end(mfccValues),
+        //     std::ostream_iterator<double>(std::cout, " ")
+        //     );
     }
-  }
+    auto cap = std::min(values.size(), CAPFeatures);
+    dlib::matrix<double, 0, 1> result(cap);
+    for (int32_t q=0; q< cap; q++) {
+        result(q)= values.at(q);
+    }
+    return result;
+
+}
+
+
+std::vector<Aquila::SampleType> ReadMP3File( QString FileName) {
+    QFile file(FileName);
+    file.open(QIODeviceBase::ReadOnly);
+
+    QVector<char> buffer(10000000);
+    int64_t bufferSize=-1;
+    bufferSize = file.read(buffer.data(), buffer.size());
+    // qDebug() << "bufferSize = " << bufferSize;
+    mp3dec_t mp3d;
+    mp3dec_init(&mp3d);
+
+    /*typedef struct
+    {
+        int frame_bytes;
+        int channels;
+        int hz;
+        int layer;
+        int bitrate_kbps;
+    } mp3dec_frame_info_t;*/
+    mp3dec_frame_info_t info;
+    short pcm[MINIMP3_MAX_SAMPLES_PER_FRAME];
+    std::vector<Aquila::SampleType> PCM;
+    /*unsigned char *input_buf; - input byte stream*/
+
+    int64_t start = 0;
+
+    while (true) {
+
+        int frames = mp3dec_decode_frame(&mp3d, reinterpret_cast<uint8_t*>(buffer.data()+start), bufferSize, pcm, &info);
+
+        if (frames<=0) break;
+        start+=info.frame_bytes;
+        // qDebug() << "info.frame_bytes = " << info.frame_bytes;
+        // qDebug() << "info.channels = " << info.channels;
+        // qDebug() << "info.hz = " << info.hz;
+        // qDebug() << "info.layer = " << info.layer;
+        // qDebug() << "info.bitrate_kbps = " << info.bitrate_kbps;
+        for (int64_t w=0; w<frames; w++)
+            PCM.push_back(pcm[w]);
+    }
+
+    return PCM;
+}
+
+void SaveRAWFile(QString FileName, const std::vector<Aquila::SampleType> & PCM ) {
+    /*
+    QFile outfile("_file.raw");
+    outfile.open(QIODevice::WriteOnly);
+    QDataStream out(&outfile);
+    out.writeRawData(reinterpret_cast<char*>(PCM.data()), sizeof(short)*PCM.size());
+    */
+}
+
+using sample_type = dlib::matrix<double>;
+using kernel_type = dlib::radial_basis_kernel<sample_type>;
+
+
+int main()
+{
+
+
+    QThreadPool::globalInstance();
+    qDebug() << "QThreadPool::globalInstance()->activeThreadCount() = " << QThreadPool::globalInstance()->activeThreadCount();
+    QString array[50];
+    QString filename("/Users/dani2000/Downloads/single/cv-corpus-7.0-singleword/en/clips/");
+    QString trainingData("/Users/dani2000/Downloads/single/cv-corpus-7.0-singleword/en/train.tsv");
+
+    QFile trainingFile(trainingData);
+    trainingFile.open(QIODeviceBase::ReadOnly);
+
+    QString selectedFile;
+
+    /*
+    const std::size_t SIZE = 64;
+    const Aquila::FrequencyType sampleFreq = 48000, f1 = 125, f2 = 700;
+
+    Aquila::SineGenerator sine1(sampleFreq);
+    sine1.setAmplitude(32).setFrequency(f1).generate(SIZE);
+    Aquila::SineGenerator sine2(sampleFreq);
+    sine2.setAmplitude(8).setFrequency(f2).setPhase(0.75).generate(SIZE);
+    auto sum = sine1 + sine2;
+
+    Aquila::TextPlot plot("Input");
+    plot.plot(sum);
+
+    auto fft = Aquila::FftFactory::getFft(SIZE);
+    Aquila::SpectrumType spectrum = fft->fft(sum.toArray());
+
+    plot.setTitle("Spectrum");
+    plot.plotSpectrum(spectrum);
+    */
+
+    // {
+    //     const std::size_t SIZE = 1024;
+    //     const Aquila::FrequencyType sampleFrequency = 1024;
+
+    //     Aquila::SineGenerator input(sampleFrequency);
+    //     input.setAmplitude(5).setFrequency(64).generate(SIZE);
+
+    //     Aquila::Mfcc mfcc(input.getSamplesCount());
+    //     auto mfccValues = mfcc.calculate(input);
+    //     std::cout << "MFCC coefficients: \n";
+    //     std::copy(
+    //         std::begin(mfccValues),
+    //         std::end(mfccValues),
+    //         std::ostream_iterator<double>(std::cout, " ")
+    //         );
+    //     std::cout << "\n";
+    // }
+
+
+
+    trainingFile.readLine();
+    int32_t min = std::numeric_limits<int32_t>::max();
+    std::vector<sample_type> samples;
+    std::vector<double> labels;
+
+    while (!trainingFile.atEnd()) {
+        auto line = trainingFile.readLine();
+        auto values = line.split('\t');
+        auto audioFileName = values.at(1);
+        auto word = values.at(2);
+        // qDebug() << values.at(2);
+        // qDebug() << "word = " << word;
+
+        auto PCM = ReadMP3File(filename+audioFileName);
+        // qDebug() << "filename+audioFileName = " << filename+audioFileName;
+        auto features = ExtractFeatures(12, PCM, 200);
+        // qDebug() << "features.size() = " << features.size();
+        if (features.size()<200) continue;
+        samples.push_back(features);
+        if (word=="three") {
+            labels.push_back(1.0);
+        } else {
+            labels.push_back(-1.0);
+        }
+    }
+    qDebug() << "samples.size() = " << samples.size();
+    qDebug() << "labels.size() = " << labels.size();
+
+    /*
+    QDirIterator it("/Users/dani2000/Downloads/cv-corpus-19.0-delta-2024-09-13/en/clips/", QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        qDebug() << it.filePath();
+        it.next();
+    }
+    */
+
+
+
+
 
   // Here we normalize all the samples by subtracting their mean and dividing by
   // their standard deviation.  This is generally a good idea since it often
@@ -84,7 +237,7 @@ main()
   // validation on our training data.  However, there is a problem with the way
   // we have sampled our distribution above.  The problem is that there is a
   // definite ordering to the samples.  That is, the first half of the samples
-  // look like they are from a different distribution than the second half. This
+  // look like they are from a different distribution thans the second half. This
   // would screw up the cross validation process but we can fix it by
   // randomizing the order of the samples with the following function call.
   randomize_samples(samples, labels);
@@ -95,20 +248,35 @@ main()
 
   // here we make an instance of the svm_nu_trainer object that uses our kernel
   // type.
-  dlib::svm_nu_trainer<kernel_type> trainer;
 
   // Now we loop over some different nu and gamma values to see how good they
   // are.  Note that this is a very simple way to try out a few possible
   // parameter choices.  You should look at the model_selection_ex.cpp program
   // for examples of more sophisticated strategies for determining good
   // parameter choices.
-  std::cout << "doing cross validation" << std::endl;
+  std::vector<std::tuple<double, double>> Parameters;
   for (double gamma = 0.00001; gamma <= 1; gamma *= 5) {
-    for (double nu = 0.00001; nu < max_nu; nu *= 5) {
+      for (double nu = 0.00001; nu < max_nu; nu *= 5) {
+          Parameters.push_back({gamma, nu});
+      }
+  }
+
+  double accuracy = 0;
+
+  std::mutex mutex;
+  std::cout << "doing cross validation" << std::endl;
+  QtConcurrent::blockingMap(
+      Parameters,
+      [&samples, &labels, &mutex](const std::tuple<double, double> & parameters) {
+          auto [gamma, nu] = parameters;
+      dlib::svm_nu_trainer<kernel_type> trainer;
       // tell the trainer the parameters we want to use
       trainer.set_kernel(kernel_type(gamma));
       trainer.set_nu(nu);
 
+      auto acc_result = dlib::cross_validate_trainer(trainer, samples, labels, 3);
+
+      std::unique_lock<std::mutex> lock(mutex);
       std::cout << "gamma: " << gamma << "    nu: " << nu;
       // Print out the cross validation accuracy for 3-fold cross validation
       // using the current gamma and nu.  cross_validate_trainer() returns a row
@@ -116,9 +284,11 @@ main()
       // examples correctly classified and the second number is the fraction of
       // -1 training examples correctly classified.
       std::cout << "     cross validation accuracy: "
-                << dlib::cross_validate_trainer(trainer, samples, labels, 3);
-    }
-  }
+                << acc_result;
+      }
+   );
+
+
 
   // From looking at the output of the above loop it turns out that a good value
   // for nu and gamma for this problem is 0.15625 for both.  So that is what we
@@ -129,8 +299,9 @@ main()
   // function will return values
   // >= 0 for samples it predicts are in the +1 class and numbers < 0 for
   // samples it predicts to be in the -1 class.
+  dlib::svm_nu_trainer<kernel_type> trainer;
   trainer.set_kernel(kernel_type(0.15625));
-  trainer.set_nu(0.15625);
+  trainer.set_nu(0.13);
   using dec_funct_type = dlib::decision_function<kernel_type>;
   using funct_type = dlib::normalized_function<dec_funct_type>;
 
@@ -146,120 +317,12 @@ main()
   std::cout << "\nnumber of support vectors in our learned_function is "
             << learned_function.function.basis_vectors.size() << std::endl;
 
-  // Now let's try this decision_function on some samples we haven't seen
-  // before.
-  sample_type sample(2, 1);
+    std::cout << "This is a " << labels.at(34) << " class example, the classifier output is "
+            << learned_function(samples.at(34)) << std::endl;
 
-  sample(0) = 3.123;
-  sample(1) = 2;
-  std::cout << "This is a +1 class example, the classifier output is "
-            << learned_function(sample) << std::endl;
 
-  sample(0) = 3.123;
-  sample(1) = 9.3545;
-  std::cout << "This is a +1 class example, the classifier output is "
-            << learned_function(sample) << std::endl;
-
-  sample(0) = 13.123;
-  sample(1) = 9.3545;
-  std::cout << "This is a -1 class example, the classifier output is "
-            << learned_function(sample) << std::endl;
-
-  sample(0) = 13.123;
-  sample(1) = 0;
-  std::cout << "This is a -1 class example, the classifier output is "
-            << learned_function(sample) << std::endl;
-
-  // We can also train a decision function that reports a well conditioned
-  // probability instead of just a number > 0 for the +1 class and < 0 for the
-  // -1 class.  An example of doing that follows:
-  using probabilistic_funct_type =
-    dlib::probabilistic_decision_function<kernel_type>;
-  using pfunct_type = dlib::normalized_function<probabilistic_funct_type>;
-
-  pfunct_type learned_pfunct;
-  learned_pfunct.normalizer = normalizer;
-  learned_pfunct.function =
-    train_probabilistic_decision_function(trainer, samples, labels, 3);
-  // Now we have a function that returns the probability that a given sample is
-  // of the +1 class.
-
-  // print out the number of support vectors in the resulting decision function.
-  // (it should be the same as in the one above)
-  std::cout << "\nnumber of support vectors in our learned_pfunct is "
-            << learned_pfunct.function.decision_funct.basis_vectors.size()
-            << std::endl;
-
-  sample(0) = 3.123;
-  sample(1) = 2;
-  std::cout << "This +1 class example should have high probability.  Its "
-               "probability is: "
-            << learned_pfunct(sample) << std::endl;
-
-  sample(0) = 3.123;
-  sample(1) = 9.3545;
-  std::cout << "This +1 class example should have high probability.  Its "
-               "probability is: "
-            << learned_pfunct(sample) << std::endl;
-
-  sample(0) = 13.123;
-  sample(1) = 9.3545;
-  std::cout
-    << "This -1 class example should have low probability.  Its probability "
-       "is: "
-    << learned_pfunct(sample) << std::endl;
-
-  sample(0) = 13.123;
-  sample(1) = 0;
-  std::cout
-    << "This -1 class example should have low probability.  Its probability "
-       "is: "
-    << learned_pfunct(sample) << std::endl;
-
-  // Another thing that is worth knowing is that just about everything in dlib
-  // is serializable.  So for example, you can save the learned_pfunct object to
-  // disk and recall it later like so:
-  dlib::serialize("saved_function.dat") << learned_pfunct;
-
-  // Now let's open that file back up and load the function object it contains.
-  dlib::deserialize("saved_function.dat") >> learned_pfunct;
-
-  // Note that there is also an example program that comes with dlib called the
-  // file_to_code_ex.cpp example.  It is a simple program that takes a file and
-  // outputs a piece of C++ code that is able to fully reproduce the file's
-  // contents in the form of a std::string object.  So you can use that along
-  // with the std::istringstream to save learned decision functions inside your
-  // actual C++ code files if you want.
-
-  // Lastly, note that the decision functions we trained above involved well
-  // over 200 basis vectors.  Support vector machines in general tend to find
-  // decision functions that involve a lot of basis vectors.  This is
-  // significant because the more basis vectors in a decision function, the
-  // longer it takes to classify new examples.  So dlib provides the ability to
-  // find an approximation to the normal output of a trainer using fewer basis
-  // vectors.
-
-  // Here we determine the cross validation accuracy when we approximate the
-  // output using only 10 basis vectors.  To do this we use the reduced2()
-  // function.  It takes a trainer object and the number of basis vectors to use
-  // and returns a new trainer object that applies the necessary post processing
-  // during the creation of decision function objects.
-  std::cout << "\ncross validation accuracy with only 10 support vectors: "
-            << cross_validate_trainer(
-                 reduced2(trainer, 10), samples, labels, 3);
-
-  // Let's print out the original cross validation score too for comparison.
-  std::cout
-    << "cross validation accuracy with all the original support vectors: "
-    << cross_validate_trainer(trainer, samples, labels, 3);
-
-  // When you run this program you should see that, for this problem, you can
-  // reduce the number of basis vectors down to 10 without hurting the cross
-  // validation accuracy.
 
   // To get the reduced decision function out we would just do this:
   learned_function.function = reduced2(trainer, 10).train(samples, labels);
   // And similarly for the probabilistic_decision_function:
-  learned_pfunct.function = train_probabilistic_decision_function(
-    reduced2(trainer, 10), samples, labels, 3);
 }
