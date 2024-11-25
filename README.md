@@ -1,0 +1,6 @@
+SVM and Deeplearning model to recognize words from voice recording(usually takes .mp3 files as input). The model is using dlib library and Aquila library to calculate the accuracy and extract the feature vecters from the recordings.
+It learns from the previous experience and recognize the words in the file and calculate how much words recognized from the input file. We used cross validation functions and FFT,DFT algorithm to calculate the accuracy.
+We extracted the features from the recordings stored in a vector and printed out all vector values. In addition we use the dlib library to calculate the transform and get the most accurate values for our model.
+The application will calculate the vectors extract the values from the model and save those in an array or vector for further use. Using a deep learning algorithm and the above mentioned libraries we made the model structure and implemented it.
+After making the model we trained it and discovered the accuracy for the support vectors. Still under maintance because we need to implement other features and capabilities for the model. In the future will be implemented the last features of the model.
+Still need some time for improvement there are lot of features to create but in the future everything will be done. The project will be published in here as soon as finished entirely.
